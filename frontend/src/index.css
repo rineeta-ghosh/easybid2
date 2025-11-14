@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&display=swap');
+@import "tailwindcss";
+
+/* Manrope global font for EasyBid */
+
+
+html, body {
+	font-family: 'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+.bg-auth-graphic {
+	background-image: linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.45));
+}
+
+/* make text selection match the brand / signup accent (orange) */
+::selection {
+	background: #ff8a4c;
+	color: #ffffff;
+}
+::-moz-selection {
+	background: #ff8a4c;
+	color: #ffffff;
+}

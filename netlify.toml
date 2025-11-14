@@ -1,0 +1,23 @@
+[build]
+  base = "frontend"
+  publish = "frontend/dist"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Production environment - UPDATE THIS after deploying backend to Render
+[context.production.environment]
+  VITE_API_URL = "https://your-backend-name.onrender.com/api"
+  VITE_APP_NAME = "EasyBid Platform"
+  VITE_ENABLE_QR_SCANNER = "true"
+  VITE_ENABLE_NOTIFICATIONS = "true"
+
+# Deploy preview environment
+[context.deploy-preview.environment]
+  VITE_API_URL = "https://your-backend-name.onrender.com/api"

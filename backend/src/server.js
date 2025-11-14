@@ -1,0 +1,75 @@
+import express from 'express'
+import dotenv from 'dotenv'
+import mongoose from 'mongoose'
+import cors from 'cors'
+import cookieParser from 'cookie-parser'
+import authRoutes from './routes/auth.js'
+import dashboardRoutes from './routes/dashboard.js'
+import tendersRoutes from './routes/tenders.js'
+import bidsRoutes from './routes/bids.js'
+import evaluationsRoutes from './routes/evaluations.js'
+import notificationsRoutes from './routes/notifications.js'
+import qrRoutes from './routes/qr.js'
+
+dotenv.config()
+
+const app = express()
+const PORT = process.env.PORT || 5000
+
+app.use(express.json())
+app.use(cookieParser())
+
+// CORS Configuration
+// In development: Allow all origins
+// In production: Use CLIENT_ORIGIN environment variable
+const allowedOrigins = process.env.CLIENT_ORIGIN 
+  ? process.env.CLIENT_ORIGIN.split(',').map(origin => origin.trim())
+  : ['http://localhost:5173', 'http://localhost:5174']
+
+app.use(cors({
+  origin: (origin, cb) => {
+    // Allow requests with no origin (e.g., curl, mobile apps, server-to-server)
+    if (!origin) return cb(null, true)
+    
+    // In production, check against allowed origins
+    if (process.env.NODE_ENV === 'production') {
+      if (allowedOrigins.includes(origin)) {
+        return cb(null, true)
+      } else {
+        return cb(new Error('Not allowed by CORS'))
+      }
+    }
+    
+    // In development, allow any origin
+    return cb(null, origin)
+  },
+  credentials: true,
+}))
+
+app.use('/api/auth', authRoutes)
+app.use('/api/dashboard', dashboardRoutes)
+app.use('/api/tenders', tendersRoutes)
+app.use('/api/bids', bidsRoutes)
+app.use('/api/evaluations', evaluationsRoutes)
+app.use('/api/notifications', notificationsRoutes)
+app.use('/api/qr', qrRoutes)
+// Serve uploaded files
+app.use('/uploads', express.static('uploads'))
+app.use('/pdfs', express.static('pdfs'))
+// Serve QR codes
+app.use('/qr-codes', express.static('public/qr-codes'))
+
+app.get('/', (req, res) => res.json({ ok: true, message: 'EasyBid backend running' }))
+
+async function start() {
+  try {
+    const mongo = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/easybid'
+    await mongoose.connect(mongo)
+    console.log('Connected to MongoDB')
+    app.listen(PORT, () => console.log(`Server listening on ${PORT}`))
+  } catch (err) {
+    console.error('Failed to start', err)
+  }
+}
+
+start()

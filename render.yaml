@@ -1,0 +1,37 @@
+services:
+  # Backend Web Service
+  - type: web
+    name: easybid-backend
+    runtime: node
+    region: oregon # Change to your preferred region (oregon, frankfurt, singapore, etc.)
+    plan: free # or starter, standard, pro
+    branch: main
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.0
+      - key: PORT
+        generateValue: true # Render will auto-assign
+      - key: MONGO_URI
+        sync: false # You'll add this in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true # Auto-generate or set manually
+      - key: CLIENT_ORIGIN
+        sync: false # Your Netlify frontend URL
+      - key: FRONTEND_URL
+        sync: false # Your Netlify frontend URL
+      - key: EMAIL_USER
+        sync: false # Your email address
+      - key: EMAIL_PASS
+        sync: false # Your email app password
+    healthCheckPath: /
+    autoDeploy: true
+
+# Note: After creating this service on Render:
+# 1. Go to Dashboard > Environment Variables
+# 2. Add your MongoDB connection string (MONGO_URI)
+# 3. Add your email credentials (EMAIL_USER, EMAIL_PASS)
+# 4. Add your Netlify frontend URL (CLIENT_ORIGIN, FRONTEND_URL)
+# 5. The backend URL will be: https://easybid-backend.onrender.com
