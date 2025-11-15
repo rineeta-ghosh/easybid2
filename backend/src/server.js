@@ -69,6 +69,24 @@ app.use('/qr-codes', express.static('public/qr-codes'))
 
 app.get('/', (req, res) => res.json({ ok: true, message: 'EasyBid backend running' }))
 
+// Environment check endpoint (for debugging)
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    environment: {
+      nodeEnv: process.env.NODE_ENV,
+      hasMongoUri: !!process.env.MONGO_URI,
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      hasEmailUser: !!process.env.EMAIL_USER,
+      hasEmailPass: !!process.env.EMAIL_PASS,
+      clientOrigin: process.env.CLIENT_ORIGIN,
+      frontendUrl: process.env.FRONTEND_URL,
+      port: PORT
+    }
+  })
+})
+
 async function start() {
   try {
     const mongo = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/easybid'
