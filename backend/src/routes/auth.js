@@ -15,8 +15,13 @@ router.post('/register',
   body('password').isLength({ min: 6 }),
   body('role').isIn(['Buyer', 'Supplier']),
   async (req, res) => {
+    console.log('=== REGISTER REQUEST ===')
+    console.log('Body:', req.body)
+    console.log('Headers:', req.headers)
+    
     const errors = validationResult(req)
       if (!errors.isEmpty()) {
+        console.log('Validation errors:', errors.array())
         const arr = errors.array()
         const msg = arr.map(e => (e.param ? `${e.param}: ${e.msg}` : e.msg)).join('; ')
         return res.status(400).json({ message: msg, errors: arr })
