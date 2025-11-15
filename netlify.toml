@@ -5,6 +5,10 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  VITE_API_URL = "https://easybid-backend.onrender.com/api"
+  VITE_APP_NAME = "EasyBid Platform"
+  VITE_ENABLE_QR_SCANNER = "true"
+  VITE_ENABLE_NOTIFICATIONS = "true"
 
 [[redirects]]
   from = "/*"
