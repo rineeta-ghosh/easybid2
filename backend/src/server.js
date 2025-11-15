@@ -26,21 +26,29 @@ const allowedOrigins = process.env.CLIENT_ORIGIN
   ? process.env.CLIENT_ORIGIN.split(',').map(origin => origin.trim())
   : ['http://localhost:5173', 'http://localhost:5174']
 
+console.log('Allowed origins:', allowedOrigins)
+console.log('NODE_ENV:', process.env.NODE_ENV)
+
 app.use(cors({
   origin: (origin, cb) => {
+    console.log('CORS request from origin:', origin)
+    
     // Allow requests with no origin (e.g., curl, mobile apps, server-to-server)
     if (!origin) return cb(null, true)
     
     // In production, check against allowed origins
     if (process.env.NODE_ENV === 'production') {
       if (allowedOrigins.includes(origin)) {
+        console.log('CORS: Origin allowed')
         return cb(null, true)
       } else {
+        console.log('CORS: Origin blocked')
         return cb(new Error('Not allowed by CORS'))
       }
     }
     
     // In development, allow any origin
+    console.log('CORS: Development mode, allowing origin')
     return cb(null, origin)
   },
   credentials: true,
