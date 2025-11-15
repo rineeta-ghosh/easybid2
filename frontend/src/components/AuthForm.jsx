@@ -22,6 +22,10 @@ export default function AuthForm({ mode = 'login', noWrapper = false }) {
     try {
       if (mode === 'login') {
         const res = await api.post('/auth/login', { email: form.email, password: form.password })
+        // Save token to localStorage
+        if (res.data.token) {
+          localStorage.setItem('token', res.data.token)
+        }
         setSuccess(res.data.message)
         // Success: redirect to dashboard
         navigate('/dashboard')
@@ -30,6 +34,10 @@ export default function AuthForm({ mode = 'login', noWrapper = false }) {
         if (form.password !== form.confirm) throw new Error('Passwords do not match')
         if ((form.password || '').length < 6) throw new Error('Password must be at least 6 characters')
         const res = await api.post('/auth/register', { name: form.name, email: form.email, password: form.password, role: form.role })
+        // Save token to localStorage
+        if (res.data.token) {
+          localStorage.setItem('token', res.data.token)
+        }
         setSuccess(res.data.message)
         navigate('/dashboard')
       }

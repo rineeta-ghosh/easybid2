@@ -36,9 +36,14 @@ router.post('/register',
       const user = await User.create({ name, email, password: hash, role })
 
       const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, process.env.JWT_SECRET || 'easybid-secret', { expiresIn: '7d' })
-      // set httpOnly cookie
-      res.cookie('token', token, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', maxAge: 7 * 24 * 3600 * 1000 })
-      res.json({ message: 'Registered', user: { id: user._id, name: user.name, email: user.email, role: user.role } })
+      // set httpOnly cookie with SameSite=None for cross-origin
+      res.cookie('token', token, { 
+        httpOnly: true, 
+        sameSite: 'none', 
+        secure: true, 
+        maxAge: 7 * 24 * 3600 * 1000 
+      })
+      res.json({ message: 'Registered', user: { id: user._id, name: user.name, email: user.email, role: user.role }, token })
     } catch (err) {
       console.error(err)
       res.status(500).json({ message: 'Server error' })
@@ -67,8 +72,13 @@ router.post('/login',
       if (!ok) return res.status(400).json({ message: 'Incorrect email or password' })
 
       const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, process.env.JWT_SECRET || 'easybid-secret', { expiresIn: '7d' })
-      res.cookie('token', token, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', maxAge: 7 * 24 * 3600 * 1000 })
-      res.json({ message: 'Authenticated', user: { id: user._id, name: user.name, email: user.email, role: user.role } })
+      res.cookie('token', token, { 
+        httpOnly: true, 
+        sameSite: 'none', 
+        secure: true, 
+        maxAge: 7 * 24 * 3600 * 1000 
+      })
+      res.json({ message: 'Authenticated', user: { id: user._id, name: user.name, email: user.email, role: user.role }, token })
     } catch (err) {
       console.error(err)
       res.status(500).json({ message: 'Server error' })
