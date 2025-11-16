@@ -45,7 +45,10 @@ export default function SubmitBid() {
       const res = await api.post('/bids', fd, { headers: { 'Content-Type': 'multipart/form-data' }, onUploadProgress: (ev)=>{
         if (ev.total) setProgress(Math.round((ev.loaded/ev.total)*100))
       } })
-      if (res.data?.success) { setMsg('Bid submitted'); setTimeout(()=>navigate('/dashboard/supplier'),1200) }
+      if (res.data?.success) { 
+        setMsg('Bid submitted successfully! Redirecting to dashboard...') 
+        setTimeout(()=>navigate('/dashboard/supplier'),1500) 
+      }
       else setErr(res.data?.message || 'Failed')
     } catch (err) { setErr(err?.response?.data?.message || err.message || 'Server error') }
   }

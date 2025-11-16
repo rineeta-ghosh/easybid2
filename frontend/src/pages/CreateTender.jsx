@@ -27,6 +27,9 @@ export default function CreateTender() {
       const res = await api.post('/tenders', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
       if (res.data?.success) {
         setMessage('Tender submitted successfully! It will be published after admin approval.')
+        setTimeout(() => {
+          window.location.href = '/dashboard/buyer'
+        }, 1500)
       } else {
         setError(res.data?.message || 'Failed to save tender')
       }
