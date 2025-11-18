@@ -38,11 +38,13 @@ app.use(cors({
     
     // In production, check against allowed origins
     if (process.env.NODE_ENV === 'production') {
-      if (allowedOrigins.includes(origin)) {
+      // Allow both old and new Netlify URLs
+      const netlifyPattern = /https:\/\/.*\.netlify\.app$/
+      if (allowedOrigins.includes(origin) || netlifyPattern.test(origin)) {
         console.log('CORS: Origin allowed')
         return cb(null, true)
       } else {
-        console.log('CORS: Origin blocked')
+        console.log('CORS: Origin blocked:', origin)
         return cb(new Error('Not allowed by CORS'))
       }
     }

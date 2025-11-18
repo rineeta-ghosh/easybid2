@@ -24,6 +24,26 @@ const Sidebar = ({ userRole = 'buyer', isOpen, onClose }) => {
   const navigate = useNavigate()
   const location = useLocation()
   
+  const handleItemClick = (href) => {
+    navigate(href)
+    if (onClose) onClose()
+  }
+
+  const handleLogout = async () => {
+    try {
+      await api.post('/auth/logout')
+      localStorage.removeItem('token')
+      navigate('/')
+      if (onClose) onClose()
+    } catch (err) {
+      console.error('Logout error:', err)
+      // Force logout even if API call fails
+      localStorage.removeItem('token')
+      navigate('/')
+      if (onClose) onClose()
+    }
+  }
+  
   const menuItems = {
     buyer: [
       {
