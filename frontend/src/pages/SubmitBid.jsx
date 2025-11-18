@@ -9,6 +9,7 @@ export default function SubmitBid() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [tender, setTender] = useState(null)
+  const [existingBids, setExistingBids] = useState([])
   const [amount, setAmount] = useState('')
   const [description, setDescription] = useState('')
   const [file, setFile] = useState(null)
@@ -22,10 +23,21 @@ export default function SubmitBid() {
     ;(async function load() {
       setLoading(true)
       try {
+        // Fetch tender details
         const res = await api.get('/tenders', { params: { search: '', page: 1 } })
         const found = (res.data.tenders || []).find(t => t._id === id)
         if (!mounted) return
         setTender(found || null)
+        
+        // Fetch existing bids for this tender
+        try {
+          const bidsRes = await api.get(`/bids/${id}`)
+          if (mounted && bidsRes.data?.bids) {
+            setExistingBids(bidsRes.data.bids)
+          }
+        } catch (bidErr) {
+          console.error('Error fetching bids:', bidErr)
+        }
       } catch (err) {
         console.error(err)
       } finally { if (mounted) setLoading(false) }
@@ -102,6 +114,40 @@ export default function SubmitBid() {
             <button onClick={()=>navigate(-1)} className="px-4 py-2 rounded bg-black/30 text-amber-200">Cancel</button>
           </div>
         </div>
+
+        {/* Current Bids Section */}
+        {existingBids.length > 0 && (
+          <div className="mt-6 p-6 rounded-2xl bg-white/6 border border-white/10">
+            <h3 className="text-xl font-semibold text-amber-100 mb-4">Current Bids ({existingBids.length})</h3>
+            <div className="space-y-3">
+              {existingBids.map((bid) => (
+                <div key={bid._id} className="p-4 rounded-lg bg-black/20 border border-white/5">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="text-amber-200 font-medium">{bid.supplier?.name || 'Anonymous'}</div>
+                      <div className="text-sm text-neutral-400 mt-1">
+                        Submitted: {new Date(bid.submittedAt).toLocaleDateString()}
+                      </div>
+                      {bid.comments && (
+                        <div className="text-sm text-neutral-300 mt-2">{bid.comments}</div>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-amber-300">${bid.amount?.toLocaleString()}</div>
+                      <div className={`text-xs mt-1 px-2 py-1 rounded ${
+                        bid.status === 'Accepted' ? 'bg-green-500/20 text-green-300' :
+                        bid.status === 'Rejected' ? 'bg-red-500/20 text-red-300' :
+                        'bg-amber-500/20 text-amber-300'
+                      }`}>
+                        {bid.status}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

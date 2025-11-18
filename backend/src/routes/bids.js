@@ -35,12 +35,11 @@ router.post('/', authMiddleware, requireRole('Supplier'), upload.single('file'),
       supplier: req.user.id, 
       amount: Number(amount), 
       comments: description, 
-      bidFile: fileUrl,
-      createdBy: req.user.id
+      bidFile: fileUrl
     })
 
     // Populate the bid with supplier info for email
-    const populatedBid = await Bid.findById(bid._id).populate('createdBy', 'name email')
+    const populatedBid = await Bid.findById(bid._id).populate('supplier', 'name email')
 
     // Send new bid notification to buyer
     if (tender.buyerId?.email) {
@@ -49,8 +48,8 @@ router.post('/', authMiddleware, requireRole('Supplier'), upload.single('file'),
 
     return res.json({ success: true, bid: populatedBid })
   } catch (err) {
-    console.error(err)
-    return res.status(500).json({ message: 'Server error' })
+    console.error('Bid submission error:', err)
+    return res.status(500).json({ message: err.message || 'Server error' })
   }
 })
 

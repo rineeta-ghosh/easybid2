@@ -104,8 +104,8 @@ const EMAIL_TEMPLATES = {
           <div style="background-color: #1a1a1a; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ff8a4c;">
             <h3 style="color: #ff8a4c; margin: 0 0 10px 0;">${tender.title}</h3>
             <p style="color: #ccc; margin: 5px 0;"><strong>Bid Amount:</strong> $${bid.amount?.toLocaleString() || 'Not specified'}</p>
-            <p style="color: #ccc; margin: 5px 0;"><strong>Submitted by:</strong> ${bid.createdBy?.name || 'Unknown Supplier'}</p>
-            <p style="color: #ccc; margin: 5px 0;"><strong>Submission Date:</strong> ${new Date(bid.createdAt).toLocaleDateString()}</p>
+            <p style="color: #ccc; margin: 5px 0;"><strong>Submitted by:</strong> ${bid.supplier?.name || 'Unknown Supplier'}</p>
+            <p style="color: #ccc; margin: 5px 0;"><strong>Submission Date:</strong> ${new Date(bid.submittedAt || Date.now()).toLocaleDateString()}</p>
           </div>
           
           <p style="color: #e5e5e5; line-height: 1.6;">Review the bid details and compare with other submissions to make the best choice for your project.</p>
